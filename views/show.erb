@@ -1,11 +1,26 @@
-<div class="snippet">
-  <h1><%= @snippet['title'] %></h1>
-  <div class="sbody" id="content">
-     <%= @snippet['formatted_body'] %>
-  </div>
-  <div class="sdate">
-     Created on <%= @snippet['created_at'].strftime('%a., %b.%-d, %Y at %l:%M%p') %>
-  </div>
-  <br/>
-  <a href="/">Create new paste!</a>
+<div class="container-fluid show">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="code">
+                <div class="numbers">
+                    <% (1..@number_of_lines_to_show.to_i).step do |line| %>
+                        <div>
+                            <%= line %>
+                        </div>
+                    <% end %>
+                </div>
+                <div class="content">
+                    <div class="scrolling">
+                        <%= @pastie['formatted_body'] %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="age">
+        Pasted <%= distance_of_time_in_words(Time.at(@pastie['created_at'])) %> ago
+    </div>
 </div>

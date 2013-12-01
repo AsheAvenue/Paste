@@ -1,16 +1,33 @@
-<div class="snippet">
-  <h1>Paste a new code snippet below:</h1>
-  <form action="/" method="POST">
-    <p><label for="name">Title: </label><input type="text" name="snippet_title" value="<%= @snippet[:title] %>"/></p>
-    <textarea name="snippet_body" id="snippet_body" rows="20"><%= @snippet[:body] %></textarea>
-    <br/>
-    <label for="lang">Language: </label>
-    <select name="snippet_lang">
-        <option value='text'>---</option>
-      <% languages.each do | lang | %>
-        <option value="<%= lang %>"><%= lang %></option>
-      <% end %>
-    </select>
-    <input type="submit" value="Save"/>
-  </form>
-</div>
+<form action="/" method="POST" role="form">
+    
+    <div class="container-fluid new">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <textarea name="pastie_body" class="form-control" id="pastie_body"><%= @pastie[:body] %></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="buttons">
+            <div class="row">
+                <div class="col-md-3 pull-left">
+                    <select name="pastie_lang" class="form-control">
+                        <option value='text'>Plain Text</option>
+                        <% languages.each do |lang| %>
+                            <option value="<%= lang %>"><%= lang %></option>
+                        <% end %>
+                    </select>
+                </div>
+                <div class="col-md-2 pull-right">
+                    <div class="pull-right">
+                        <input type="submit" value="Paste" class="btn" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
