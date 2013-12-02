@@ -7,8 +7,8 @@ require 'net/http'
 RDB_CONFIG = {
   :host   => ENV['RDB_HOST']  || 'db.labs.asheavenue.com', 
   :port   => ENV['RDB_PORT']  || 28015,
-  :db     => ENV['RDB_DB']    || 'ashepastie',
-  :table  => ENV['RDB_TABLE'] || 'pasties'
+  :db     => ENV['RDB_DB']    || 'ashepaste',
+  :table  => ENV['RDB_TABLE'] || 'pastes'
 }
 
 r = RethinkDB::RQL.new
@@ -39,27 +39,27 @@ after do
 end
 
 get '/' do
-  @pastie = {}
+  @paste = {}
   erb :new
 end
 
 post '/' do
   @id = ([*('A'..'Z'),*('0'..'9')]-%w(0 1 I O)).sample(5).join
   
-  @pastie = {
+  @paste = {
     :id  => "#{@id}",
-    :body => params[:pastie_body],
-    :lang => (params[:pastie_lang] || 'text').downcase,
+    :body => params[:paste_body],
+    :lang => (params[:paste_lang] || 'text').downcase,
   }
   
-  if @pastie[:body].empty?
+  if @paste[:body].empty?
     erb :new
   end
 
-  @pastie[:created_at] = Time.now.to_i
-  @pastie[:formatted_body] = pygmentize(@pastie[:body], @pastie[:lang])
+  @paste[:created_at] = Time.now.to_i
+  @paste[:formatted_body] = pygmentize(@paste[:body], @paste[:lang])
 
-  result = r.table(RDB_CONFIG[:table]).insert(@pastie).run(@rdb_connection)
+  result = r.table(RDB_CONFIG[:table]).insert(@paste).run(@rdb_connection)
 
   if result['inserted'] == 1
     redirect "/#{@id}"
@@ -70,9 +70,9 @@ end
 
 get '/:id' do
   @id = params[:id]
-  @pastie = r.table(RDB_CONFIG[:table]).get(@id).run(@rdb_connection)
-  if @pastie
-    @number_of_lines_to_show = @pastie['formatted_body'].lines.count - 1
+  @paste = r.table(RDB_CONFIG[:table]).get(@id).run(@rdb_connection)
+  if @paste
+    @number_of_lines_to_show = @paste['formatted_body'].lines.count - 1
     erb :show
   else
     redirect '/'

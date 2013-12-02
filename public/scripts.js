@@ -9,7 +9,7 @@ var paste = (function(){
             self = this;
             
             //focus the textarea and resize it
-            $('#pastie_body').focus();
+            $('#paste_body').focus();
             self.size_textarea();
             
             $(window).on('resize', function(){
@@ -18,7 +18,7 @@ var paste = (function(){
         },
 
         size_textarea: function() {
-            $('#pastie_body').height( $(window).height() - 128);
+            $('#paste_body').height( $(window).height() - $('.footer').height() - $('.navbar').height() - 12);
         }
     };
 

@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <textarea name="pastie_body" class="form-control" id="pastie_body"><%= @pastie[:body] %></textarea>
+                    <textarea name="paste_body" class="form-control" id="paste_body"><%= @paste[:body] %></textarea>
                 </div>
             </div>
         </div>
@@ -14,7 +14,7 @@
         <div class="buttons">
             <div class="row">
                 <div class="col-md-3 pull-left">
-                    <select name="pastie_lang" class="form-control">
+                    <select name="paste_lang" class="form-control">
                         <option value='text'>Plain Text</option>
                         <% languages.each do |lang| %>
                             <option value="<%= lang %>"><%= lang %></option>

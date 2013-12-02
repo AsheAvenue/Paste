@@ -1,6 +1,6 @@
 <div class="container-fluid show">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 col">
             <div class="code">
                 <div class="numbers">
                     <% (1..@number_of_lines_to_show.to_i).step do |line| %>
@@ -10,10 +10,9 @@
                     <% end %>
                 </div>
                 <div class="content">
-                    <div class="scrolling">
-                        <%= @pastie['formatted_body'] %>
-                    </div>
+                    <%= @paste['formatted_body'] %>
                 </div>
+                <div class="clr"></div>
             </div>
         </div>
     </div>
@@ -21,6 +20,6 @@
 
 <div class="footer">
     <div class="age">
-        Pasted <%= distance_of_time_in_words(Time.at(@pastie['created_at'])) %> ago
+        Pasted <%= distance_of_time_in_words(Time.at(@paste['created_at'])) %> ago
     </div>
 </div>

@@ -41,6 +41,11 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
     font-family: 'Proxima Nova', 'Lucida Grande', Arial, sans-serif;
     padding: 0;
@@ -48,11 +53,7 @@ body {
     position: absolute;
     top: 0;
     width: 100%;
-}
-
-html,
-body {
-  height: 100%;
+    background-color: #95a5a6;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -117,14 +118,19 @@ textarea.form-control {
     
 .show .row {
     margin-right: 0;
+    height: 100%;
 }
+
+    .show .row .col {
+        height: 100%;
+    }
 
 #wrap {
   min-height: 100%;
-  height: auto;
+  height: 100%;
   margin: 0 auto -56px;
   padding: 0 0 56px;
-  background-color: #ecf0f1;
+  background-color: #95a5a6;
 }
 
     #wrap .container-fluid {
@@ -140,6 +146,11 @@ textarea.form-control {
     margin-bottom: 0;
     padding-left: 10px;
     color: white;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .navbar-buttons {
@@ -159,14 +170,16 @@ textarea.form-control {
     margin-bottom: 0;
 }
 
-
 .code {
     background-color: #ecf0f1;
+    height: 100%;
+    margin-right: -15px;
 }
 
 .code .numbers {
     float: left;
     width: 5%;
+    height: 100%;
     font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
     padding: 9.5px;
     margin: 0;
@@ -186,11 +199,7 @@ textarea.form-control {
     float: left;
     width: 95%;
     margin: 0;
-}
-
-.code .content .scrolling {
-    width: 10000px;
-    overflow-x: scroll;
+    padding-bottom: 56px;
 }
 
 .footer {
@@ -199,6 +208,11 @@ textarea.form-control {
     left: 0;
     bottom: 0;
     height: 56px;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
     .footer .buttons {
         margin-top: 0;
@@ -307,10 +321,17 @@ textarea.form-control {
     
     #wrap {
         padding-top: 0px;
+        padding-bottom: 36px;
     }
-    #wrap .container-fluid {
-        padding-top: 40px;
+    
+        #wrap .container-fluid {
+            padding-top: 40px;
+        }
+        
+    .code .content {
+        padding-bottom: 36px;
     }
+        
     .navbar-buttons {
         padding: 5px;
     }
@@ -319,9 +340,18 @@ textarea.form-control {
         font-size: 12px;
     }
     
-    #pastie_body {
+    #paste_body {
         min-height: 240px;
     }
+    
+    .footer {
+        height: 50px;
+    }
+    
+        .footer .age {
+            line-height: 50px;
+            font-size: 12px;
+        }
 }
 
 @media (max-width: 640px) {

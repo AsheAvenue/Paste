@@ -1,3 +1,3 @@
 # encoding: UTF-8
-require './ashepastie'
+require './ashepaste'
 run Sinatra::Application
