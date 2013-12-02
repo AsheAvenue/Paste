@@ -12,7 +12,11 @@ RDB_CONFIG = {
 }
 
 r = RethinkDB::RQL.new
-  
+
+use Rack::Auth::Basic, "Authorization Required" do |username, password|
+  username == 'ashe' and password == 'avenue'
+end
+
 configure do
   set :db, RDB_CONFIG[:db]
   connection = RethinkDB::Connection.new(:host => RDB_CONFIG[:host], :port => RDB_CONFIG[:port])

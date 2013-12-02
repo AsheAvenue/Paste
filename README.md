@@ -1,20 +1,6 @@
 # What is it #
 
-A simple [Pastie.org](http://pastie.org)-like web application inspired by Nick Plante's [toopaste](https://github.com/zapnap/toopaste) project
-showing how to use **RethinkDB as a backend for Sinatra applications**. 
-
-The app demos the following functionality:
-
-*   Creating a new snippet (code highlighting included)
-*   Retrieving a snippet
-*   Listing snippets for a language
-
-The app could be easily extended to provide more interesting features like:
-
-*   pagination
-*   snippet expiration
-
-Fork it and send us a pull request.
+A simple [Pastie.org](http://pastie.org)-like web application based on RethinkDB. Forked from the RethinkDB Example app. Without embellishment and with added security, aimed for internal use.
 
 # Complete stack #
 
@@ -24,7 +10,7 @@ Fork it and send us a pull request.
 # Installation #
 
 ```
-git clone git://github.com/rethinkdb/rethinkdb-example-sinatra-pastie.git
+git clone git://github.com/asheavenue/paste.git
 gem install sinatra
 gem install rethinkdb
 ```
@@ -33,23 +19,20 @@ _Note_: If you don't have RethinkDB installed, you can follow [these instruction
 
 # Running the application #
 
-Running a Sinatra app is as easy as:
-
 ```
-ruby repasties.rb
+bundle exec rackup
 ```
-
-# Annotated Source Code #
-
-After checking out the code, you can find the annotated source [here][].
 
 # Credits #
 
-* This sample app was inspired by Nick Plante's [toopaste](https://github.com/zapnap/toopaste) project.
+* This app was based on RethinkDB's Ruby sample app: https://github.com/rethinkdb/rethinkdb-example-sinatra-pastie
+* That sample app was inspired by Nick Plante's [toopaste](https://github.com/zapnap/toopaste) project.
 * The snippets of code used for syntax highlighting are from Ryan Tomayko's [rocco.rb](https://github.com/rtomayko/rocco) project.
 * Code highlighting in snippets is done using [Pygments](http://pygments.org) or the [Pygments web service](http://pygments.appspot.com/)
 * The [Solarized dark Pygments stylesheet](https://gist.github.com/1573884) was created by Zameer Manji
 
 # License #
 
-This demo application is licensed under the MIT license: <http://opensource.org/licenses/mit-license.php>
+© 2013 <a href="http://www.asheavenue.com">Ashe Avenue</a>. Created by <a href="http://twitter.com/timboisvert">Tim Boisvert</a>.
+<br />
+Paste is released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.
