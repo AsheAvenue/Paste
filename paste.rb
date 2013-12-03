@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby -rubygems
+# encoding: UTF-8
 
 require 'sinatra'
 require 'rethinkdb'
