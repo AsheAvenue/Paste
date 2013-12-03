@@ -67,7 +67,11 @@ post '/' do
   end
 
   @paste[:created_at] = Time.now.to_i
-  @paste[:formatted_body] = pygmentize(@paste[:body], @paste[:lang])
+  
+  # get the formatted body after pygmentizing
+  formatted_body = pygmentize(@paste[:body], @paste[:lang])
+  formatted_body = formatted_body.force_encoding('UTF-8')
+  @paste[:formatted_body] = formatted_body
 
   result = r.table(CONFIG[:table]).insert(@paste).run(@rdb_connection)
 
