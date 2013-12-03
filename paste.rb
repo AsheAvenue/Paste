@@ -17,8 +17,6 @@ CONFIG = {
   :pass   => ENV['PASTE_PASS']
 }
 
-puts CONFIG[:host]
-
 r = RethinkDB::RQL.new
 
 use Rack::Auth::Basic, "Authorization Required" do |username, password|
