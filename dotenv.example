@@ -1,0 +1,6 @@
+RDB_HOST=db.whatever.com
+RDB_PORT=28015
+RDB_DB=pastes
+RDB_TABLE=pastes
+PASTE_USER=whatever
+PASTE_PASS=p@ssword

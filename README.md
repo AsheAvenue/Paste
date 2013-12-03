@@ -1,6 +1,6 @@
-# What is it #
+# Paste #
 
-A simple [Pastie.org](http://pastie.org)-like web application based on RethinkDB. Forked from the RethinkDB Example app. Without embellishment and with added security, aimed for internal use.
+Paste is a simple [Pastie.org](http://pastie.org)-like web application based on RethinkDB. Forked from the RethinkDB Example app. Without embellishment and with added security, aimed for internal use.
 
 # Complete stack #
 
@@ -9,13 +9,21 @@ A simple [Pastie.org](http://pastie.org)-like web application based on RethinkDB
 
 # Installation #
 
+Ensure you have RethinkDB running somewhere with ports appropriately opened. If you don't have RethinkDB installed, you can follow [these instructions to get it up and running](http://www.rethinkdb.com/docs/install/).
+
+Pull down the code and install the necesessary gems:
+
 ```
 git clone git://github.com/asheavenue/paste.git
 gem install sinatra
 gem install rethinkdb
 ```
 
-_Note_: If you don't have RethinkDB installed, you can follow [these instructions to get it up and running](http://www.rethinkdb.com/docs/install/).
+Create a .env file:
+
+```
+cp dotenv.example .env
+```
 
 # Running the application #
 

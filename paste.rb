@@ -3,28 +3,36 @@
 require 'sinatra'
 require 'rethinkdb'
 require 'net/http'
+require 'dotenv'
 
-RDB_CONFIG = {
-  :host   => ENV['RDB_HOST']  || 'db.labs.asheavenue.com', 
-  :port   => ENV['RDB_PORT']  || 28015,
-  :db     => ENV['RDB_DB']    || 'ashepaste',
-  :table  => ENV['RDB_TABLE'] || 'pastes'
+# Load the env
+Dotenv.load
+
+CONFIG = {
+  :host   => ENV['RDB_HOST'], 
+  :port   => ENV['RDB_PORT'],
+  :db     => ENV['RDB_DB'],
+  :table  => ENV['RDB_TABLE'],
+  :user   => ENV['PASTE_USER'],
+  :pass   => ENV['PASTE_PASS']
 }
+
+puts CONFIG[:host]
 
 r = RethinkDB::RQL.new
 
 use Rack::Auth::Basic, "Authorization Required" do |username, password|
-  username == 'ashe' and password == 'avenue'
+  username == CONFIG[:user] and password == CONFIG[:pass]
 end
 
 configure do
-  set :db, RDB_CONFIG[:db]
-  connection = RethinkDB::Connection.new(:host => RDB_CONFIG[:host], :port => RDB_CONFIG[:port])
+  set :db, CONFIG[:db]
+  connection = RethinkDB::Connection.new(:host => CONFIG[:host], :port => CONFIG[:port])
   begin
-    r.db_create(RDB_CONFIG[:db]).run(connection)
-    r.db(RDB_CONFIG[:db]).table_create(RDB_CONFIG[:table]).run(connection)
+    r.db_create(CONFIG[:db]).run(connection)
+    r.db(CONFIG[:db]).table_create(CONFIG[:table]).run(connection)
   rescue RethinkDB::RqlRuntimeError => err
-    puts "Database `#{RDB_CONFIG[:db]}` and table `#{RDB_CONFIG[:table]}` already exist."
+    puts "Database `#{CONFIG[:db]}` and table `#{CONFIG[:table]}` already exist."
   ensure
     connection.close
   end
@@ -32,7 +40,7 @@ end
 
 before do
   begin
-    @rdb_connection = r.connect(:host => RDB_CONFIG[:host], :port => RDB_CONFIG[:port], :db => RDB_CONFIG[:db])
+    @rdb_connection = r.connect(:host => CONFIG[:host], :port => CONFIG[:port], :db => CONFIG[:db])
   rescue Exception => err
     halt 501, 'Cannot connect to database'
   end
@@ -63,7 +71,7 @@ post '/' do
   @paste[:created_at] = Time.now.to_i
   @paste[:formatted_body] = pygmentize(@paste[:body], @paste[:lang])
 
-  result = r.table(RDB_CONFIG[:table]).insert(@paste).run(@rdb_connection)
+  result = r.table(CONFIG[:table]).insert(@paste).run(@rdb_connection)
 
   if result['inserted'] == 1
     redirect "/#{@id}"
@@ -74,7 +82,7 @@ end
 
 get '/:id' do
   @id = params[:id]
-  @paste = r.table(RDB_CONFIG[:table]).get(@id).run(@rdb_connection)
+  @paste = r.table(CONFIG[:table]).get(@id).run(@rdb_connection)
   if @paste
     @number_of_lines_to_show = @paste['formatted_body'].lines.count - 1
     erb :show
@@ -91,7 +99,11 @@ helpers do
   def pygmentize(code, lang)
     url = URI.parse 'http://pygments.appspot.com/'
     options = {'lang' => lang, 'code' => code}
-    Net::HTTP.post_form(url, options).body
+    begin
+      Net::HTTP.post_form(url, options).body
+    rescue
+      "<pre>#{code}</pre>"
+    end
   end
   
   def distance_of_time_in_words(time)

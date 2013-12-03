@@ -30,6 +30,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   foreman
   rethinkdb
   sinatra
