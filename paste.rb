@@ -5,9 +5,10 @@ require 'rethinkdb'
 require 'net/http'
 require 'dotenv'
 
-# Load the env
+# Load the .env file
 Dotenv.load
 
+# Set up the config values
 CONFIG = {
   :host   => ENV['RDB_HOST'], 
   :port   => ENV['RDB_PORT'],
@@ -17,12 +18,15 @@ CONFIG = {
   :pass   => ENV['PASTE_PASS']
 }
 
+# Create the Rethink object
 r = RethinkDB::RQL.new
 
+# Some basic ht auth
 use Rack::Auth::Basic, "Authorization Required" do |username, password|
   username == CONFIG[:user] and password == CONFIG[:pass]
 end
 
+# When the app starts, ensure the database is set up
 configure do
   set :db, CONFIG[:db]
   connection = RethinkDB::Connection.new(:host => CONFIG[:host], :port => CONFIG[:port])
@@ -36,6 +40,7 @@ configure do
   end
 end
 
+# Always each request by opening a connection to Rethink
 before do
   begin
     @rdb_connection = r.connect(:host => CONFIG[:host], :port => CONFIG[:port], :db => CONFIG[:db])
@@ -44,37 +49,44 @@ before do
   end
 end
 
+# Always finish each request by closing the Rethink connection
 after do
   @rdb_connection.close if @rdb_connection
 end
 
+# Show the 'new paste' screen 
 get '/' do
   @paste = {}
   erb :new
 end
 
+# Handle creation of a new paste
 post '/' do
+  
+  # Generate a simple 5-character ID
   @id = ([*('A'..'Z'),*('0'..'9')]-%w(0 1 I O)).sample(5).join
   
   @paste = {
     :id  => "#{@id}",
     :body => params[:paste_body],
     :lang => (params[:paste_lang] || 'text').downcase,
+    :created_at = Time.now.to_i
   }
   
+  # Pretend we're on the 'new paste' screen if the user isn't posting a body or it's blank.
   if @paste[:body].empty?
     erb :new
   end
-
-  @paste[:created_at] = Time.now.to_i
   
-  # get the formatted body after pygmentizing
+  # Get the formatted body after pygmentizing
   formatted_body = pygmentize(@paste[:body], @paste[:lang])
   formatted_body = formatted_body.force_encoding('UTF-8')
   @paste[:formatted_body] = formatted_body
 
+  # Save the paste in the Rethink DB
   result = r.table(CONFIG[:table]).insert(@paste).run(@rdb_connection)
 
+  # Redirect to the 'show paste' page or bounce back to the start page
   if result['inserted'] == 1
     redirect "/#{@id}"
   else
@@ -82,6 +94,7 @@ post '/' do
   end
 end
 
+# Show a paste
 get '/:id' do
   @id = params[:id]
   @paste = r.table(CONFIG[:table]).get(@id).run(@rdb_connection)
@@ -93,11 +106,15 @@ get '/:id' do
   end
 end
 
+# Private functions used herein.
 helpers do
+  
+  # The languages visible in the drop-down and send to the pygments service
   def languages
     ['HTML', 'Javascript', 'CSS', 'PHP', 'ERB', 'Ruby', 'Objective-C']
   end
   
+  # Use the pygments web service
   def pygmentize(code, lang)
     url = URI.parse 'http://pygments.appspot.com/'
     options = {'lang' => lang, 'code' => code}
@@ -108,6 +125,7 @@ helpers do
     end
   end
   
+  # Replicate one of Rails' most useful features
   def distance_of_time_in_words(time)
     minutes = (Time.new.to_i - time.to_i).floor / 60
     case
