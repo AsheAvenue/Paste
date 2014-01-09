@@ -41,6 +41,6 @@ bundle exec rackup
 
 # License #
 
-© 2013 <a href="http://www.asheavenue.com">Ashe Avenue</a>. Created by <a href="http://twitter.com/timboisvert">Tim Boisvert</a>.
+© 2014 <a href="http://www.asheavenue.com">Ashe Avenue</a>. Created by <a href="http://twitter.com/timboisvert">Tim Boisvert</a>.
 <br />
 Paste is released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.
