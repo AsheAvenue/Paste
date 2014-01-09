@@ -14,13 +14,16 @@
                     <h1><a href="/">Paste</a></h1>
                 </div>
             </div>
-            <% if @id %>
-                <div class="pull-right">
-                    <div class="navbar-buttons">
-                        <a href="/" class="btn">Paste something else</a>
-                    </div>
+            <div class="pull-right">
+                <div class="navbar-buttons">
+                    <% if @exists %>
+                        <a href="/<%= @id %>/edit" class="btn">Edit this Paste</a>
+                    <% elsif @editing %>
+                        <a href="/<%= @id %>" class="btn">Cancel editing</a>
+                    <% end %>
+                    <a href="/" class="btn">Paste something else</a>
                 </div>
-            <% end %>
+            </div>
         </div>
       </div>
     </div>

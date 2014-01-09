@@ -21,5 +21,8 @@
 <div class="footer">
     <div class="age">
         Pasted <%= distance_of_time_in_words(Time.at(@paste['created_at'])) %> ago
+        <% if @paste['updated_at'] %>
+            &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; Updated <%= distance_of_time_in_words(Time.at(@paste['updated_at'])) %> ago
+        <% end %>
     </div>
 </div>

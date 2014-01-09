@@ -1,10 +1,12 @@
-<form action="/" method="POST" role="form">
+<form action="/<%= @id %>" method="POST" role="form">
+    
+    <input type="hidden" name="editing" value="<%= @editing %>" />
     
     <div class="container-fluid new">
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <textarea name="paste_body" class="form-control" id="paste_body"><%= @paste[:body] %></textarea>
+                    <textarea name="paste_body" class="form-control" id="paste_body"><%= @paste['body'] %></textarea>
                 </div>
             </div>
         </div>
@@ -23,7 +25,7 @@
                 </div>
                 <div class="col-md-2 pull-right">
                     <div class="pull-right">
-                        <input type="submit" value="Paste" class="btn" />
+                        <input type="submit" value="<% if @editing %>Update<% else %>Paste<% end %>" class="btn" />
                     </div>
                 </div>
             </div>

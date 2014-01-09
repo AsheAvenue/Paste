@@ -56,55 +56,85 @@ end
 
 # Show the 'new paste' screen 
 get '/' do
-  @paste = {}
-  erb :new
+  id = ([*('A'..'Z'),*('0'..'9')]-%w(0 1 I O)).sample(5).join
+  redirect "/#{id}"
 end
 
-# Handle creation of a new paste
-post '/' do
-  
-  # Generate a simple 5-character ID
-  @id = ([*('A'..'Z'),*('0'..'9')]-%w(0 1 I O)).sample(5).join
-  
-  @paste = {
-    :id  => "#{@id}",
-    :body => params[:paste_body],
-    :lang => (params[:paste_lang] || 'text').downcase,
-    :created_at = Time.now.to_i
-  }
-  
-  # Pretend we're on the 'new paste' screen if the user isn't posting a body or it's blank.
-  if @paste[:body].empty?
-    erb :new
-  end
-  
-  # Get the formatted body after pygmentizing
-  formatted_body = pygmentize(@paste[:body], @paste[:lang])
-  formatted_body = formatted_body.force_encoding('UTF-8')
-  @paste[:formatted_body] = formatted_body
-
-  # Save the paste in the Rethink DB
-  result = r.table(CONFIG[:table]).insert(@paste).run(@rdb_connection)
-
-  # Redirect to the 'show paste' page or bounce back to the start page
-  if result['inserted'] == 1
-    redirect "/#{@id}"
-  else
-    redirect '/'
-  end
-end
-
-# Show a paste
+# Show a paste or the edit form
 get '/:id' do
   @id = params[:id]
   @paste = r.table(CONFIG[:table]).get(@id).run(@rdb_connection)
   if @paste
+    @exists = true
     @number_of_lines_to_show = @paste['formatted_body'].lines.count - 1
     erb :show
   else
-    redirect '/'
+    @paste = {}
+    erb :form
   end
 end
+
+# Edit a paste
+get '/:id/edit' do
+  @id = params[:id]
+  @paste = r.table(CONFIG[:table]).get(@id).run(@rdb_connection)
+  if @paste
+    @editing = true
+    erb :form
+  else
+    redirect "/#{@id}"
+  end
+end
+
+# Handle updating of a paste
+post '/:id' do
+  @id = params[:id]
+  @editing = params[:editing] != "" ? params[:editing] : nil
+
+  # Create the object representation
+  @paste = {
+    :id  => "#{@id}",
+    :body => params[:paste_body],
+    :lang => (params[:paste_lang] || 'text').downcase
+  }
+  
+  # Set the dates
+  if @editing
+    @paste[:updated_at] = Time.now.to_i
+  else
+    @paste[:created_at] = Time.now.to_i
+  end
+  
+  # Show the form if the user isn't posting a body or it's blank.
+  if @paste[:body].empty?
+    erb :form
+  end
+
+  # Get the formatted body after pygmentizing
+  formatted_body = pygmentize(@paste[:body], @paste[:lang])
+  formatted_body = formatted_body.force_encoding('UTF-8')
+  @paste[:formatted_body] = formatted_body
+ 
+  # Save the paste in the Rethink DB
+  if @editing
+    result = r.table(CONFIG[:table]).filter({'id' => @id}).update(@paste).run(@rdb_connection)
+  else
+    result = r.table(CONFIG[:table]).insert(@paste).run(@rdb_connection)
+  end
+  
+  # Redirect to the 'show paste' page or bounce back to the start page
+  if result['errors'] == 0
+    redirect "/#{@id}"
+  else
+    if @editing
+      redirect "/#{@id}/edit"
+    else
+      redirect "/#{@id}"
+    end
+  end
+end
+
+
 
 # Private functions used herein.
 helpers do
