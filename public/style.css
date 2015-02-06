@@ -64,9 +64,10 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 h1 {
-    font-weight: 100;
+    font-weight: 800;
     font-size: 36px;
     line-height: 60px;
+    text-transform: uppercase;
 }
 
 pre {
@@ -106,15 +107,17 @@ textarea.form-control {
 
 .btn {
     border-radius: 2px;
-    background-color: #b344f3;
-    color: white;
+    background-color: #fff;
+    color: #cc007b;
     border: 0;
     font-size: 17px;
-    font-weight: 400;
+    font-weight: 800;
+    text-transform: uppercase;
+    
 }
     .btn:hover {
-        background-color: #8e44ad;
-        color: white;
+        background-color: #ecf0f1;
+        color: #cc007b;
     }
     
 .show .row {
@@ -140,7 +143,7 @@ textarea.form-control {
     }
 
 .navbar {
-    background-color: #b344f3;
+    background-color: #cc007b;
     border-bottom: 0;
     min-height: 0;
     height: 60px;
@@ -159,8 +162,11 @@ textarea.form-control {
 }
 
     .navbar-buttons .btn {
-        background-color: white;
-        color: #b344f3;
+        background-color: #fff;
+        color: #cc007b;
+        text-transform: uppercase;
+        font-weight: 800;
+        margin-left: 5px;
     }
     
     .navbar-buttons .btn:hover {
@@ -214,20 +220,22 @@ textarea.form-control {
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    background-color: #cc007b;
 }
     .footer .buttons {
         margin-top: 0;
-        background-color: #bdc3c7;
+        background-color: #cc007b;
         padding: 10px;
     }
     
     .footer .age {
         margin-top: 0;
-        background-color: #bdc3c7;
         color: white;
         padding-left: 15px;
         line-height: 56px;
         font-size: 15px;
+        font-weight: 800;
+        text-transform: uppercase;
     }
 
 /* Solarized Dark theme for Pygments from @zmanji https://gist.github.com/1573884 */

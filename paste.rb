@@ -129,9 +129,10 @@ post '/:id' do
   else
     body = params[:paste_body]
     body.gsub!("'", %q(\\\'))
+    body.force_encoding('UTF-8')
     formatted_body = pygmentize(params[:paste_body], params[:paste_lang].downcase)
     formatted_body.gsub!("'", %q(\\\'))
-    
+    formatted_body.force_encoding('UTF-8')
     db = Sequel.connect("mysql://#{CONFIG[:mysql_user]}:#{CONFIG[:mysql_pass]}@#{CONFIG[:mysql_host]}/#{CONFIG[:mysql_db]}")
     if @editing
       db.run("UPDATE pastes SET body = '#{body}', formatted_body = '#{formatted_body}', lang = '#{(params[:paste_lang] || 'text').downcase}', updated_at = #{Time.now.to_i} WHERE id = '#{@id}' ")
