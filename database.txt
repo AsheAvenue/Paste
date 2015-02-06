@@ -1,0 +1,9 @@
+CREATE TABLE `pastes` (
+  `id` varchar(11) NOT NULL DEFAULT '',
+  `body` text,
+  `formatted_body` text,
+  `created_at` int NULL DEFAULT NULL,
+  `updated_at` int NULL DEFAULT NULL,
+  `lang` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

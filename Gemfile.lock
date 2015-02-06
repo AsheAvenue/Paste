@@ -5,6 +5,7 @@ GEM
     dotenv (0.9.0)
     eventmachine (1.0.3)
     json (1.8.1)
+    mysql (2.9.1)
     rack (1.5.2)
     rack-protection (1.5.1)
       rack
@@ -12,6 +13,7 @@ GEM
       json
       ruby-protocol-buffers
     ruby-protocol-buffers (1.5.1)
+    sequel (4.16.0)
     sinatra (1.4.4)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -27,6 +29,8 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  mysql
   rethinkdb
+  sequel
   sinatra
   thin

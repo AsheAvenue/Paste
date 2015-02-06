@@ -4,6 +4,7 @@ require 'sinatra'
 require 'rethinkdb'
 require 'net/http'
 require 'dotenv'
+require 'sequel'
 
 # Load the .env file
 Dotenv.load
@@ -15,7 +16,12 @@ CONFIG = {
   :db     => ENV['RDB_DB'],
   :table  => ENV['RDB_TABLE'],
   :user   => ENV['PASTE_USER'],
-  :pass   => ENV['PASTE_PASS']
+  :pass   => ENV['PASTE_PASS'],
+  :mysql_host   => ENV['MYSQL_HOST'],
+  :mysql_user   => ENV['MYSQL_USER'],
+  :mysql_pass   => ENV['MYSQL_PASS'],
+  :mysql_db     => ENV['MYSQL_DB'],
+  :mysql_table  => ENV['MYSQL_TABLE']
 }
 
 # Create the Rethink object
@@ -60,10 +66,37 @@ get '/' do
   redirect "/#{id}"
 end
 
+# get "/migrate" do
+#
+#   db = Sequel.connect("mysql://#{CONFIG[:mysql_user]}:#{CONFIG[:mysql_pass]}@#{CONFIG[:mysql_host]}/#{CONFIG[:mysql_db]}")
+#
+#   # Delete the old pastes from the db
+#   puts "Deleting previous entries"
+#   db.run("DELETE FROM pastes")
+#
+#   # Get all the pastes from Rethink
+#   pastes = r.table(CONFIG[:table]).run(@rdb_connection).to_a
+#   pastes.each do |paste|
+#     puts "Migrating paste: #{paste['id']}"
+#     body = paste['body'].gsub("'", %q(\\\'))
+#     formatted_body = paste['formatted_body'].gsub("'", %q(\\\'))
+#     begin
+#       if paste['id'] != ''
+#         db.run("INSERT INTO pastes (id, body, formatted_body, created_at, lang) VALUES('#{paste['id']}', '#{body}', '#{formatted_body}', #{paste['created_at']}, '#{paste['lang']}')")
+#       end
+#     rescue
+#     end
+#   end
+#
+#   db.disconnect
+#
+#   'Done'
+# end
+
 # Show a paste or the edit form
 get '/:id' do
   @id = params[:id]
-  @paste = r.table(CONFIG[:table]).get(@id).run(@rdb_connection)
+  @paste = get_paste(@id)
   if @paste
     @exists = true
     @number_of_lines_to_show = @paste['formatted_body'].lines.count - 1
@@ -77,7 +110,7 @@ end
 # Edit a paste
 get '/:id/edit' do
   @id = params[:id]
-  @paste = r.table(CONFIG[:table]).get(@id).run(@rdb_connection)
+  @paste = get_paste(@id)
   if @paste
     @editing = true
     erb :form
@@ -91,53 +124,43 @@ post '/:id' do
   @id = params[:id]
   @editing = params[:editing] != "" ? params[:editing] : nil
 
-  # Create the object representation
-  @paste = {
-    :id  => "#{@id}",
-    :body => params[:paste_body],
-    :lang => (params[:paste_lang] || 'text').downcase
-  }
-  
-  # Set the dates
-  if @editing
-    @paste[:updated_at] = Time.now.to_i
-  else
-    @paste[:created_at] = Time.now.to_i
-  end
-  
-  # Show the form if the user isn't posting a body or it's blank.
-  if @paste[:body].empty?
+  if params[:paste_body].empty?
     erb :form
-  end
-
-  # Get the formatted body after pygmentizing
-  formatted_body = pygmentize(@paste[:body], @paste[:lang])
-  formatted_body = formatted_body.force_encoding('UTF-8')
-  @paste[:formatted_body] = formatted_body
- 
-  # Save the paste in the Rethink DB
-  if @editing
-    result = r.table(CONFIG[:table]).filter({'id' => @id}).update(@paste).run(@rdb_connection)
   else
-    result = r.table(CONFIG[:table]).insert(@paste).run(@rdb_connection)
-  end
-  
-  # Redirect to the 'show paste' page or bounce back to the start page
-  if result['errors'] == 0
-    redirect "/#{@id}"
-  else
+    body = params[:paste_body]
+    body.gsub!("'", %q(\\\'))
+    formatted_body = pygmentize(params[:paste_body], params[:paste_lang].downcase)
+    formatted_body.gsub!("'", %q(\\\'))
+    
+    db = Sequel.connect("mysql://#{CONFIG[:mysql_user]}:#{CONFIG[:mysql_pass]}@#{CONFIG[:mysql_host]}/#{CONFIG[:mysql_db]}")
     if @editing
-      redirect "/#{@id}/edit"
+      db.run("UPDATE pastes SET body = '#{body}', formatted_body = '#{formatted_body}', lang = '#{(params[:paste_lang] || 'text').downcase}', updated_at = #{Time.now.to_i} WHERE id = '#{@id}' ")
     else
-      redirect "/#{@id}"
+      db.run("INSERT INTO pastes (id, body, formatted_body, lang, created_at) VALUES('#{@id}', '#{body}', '#{formatted_body}', '#{(params[:paste_lang] || 'text').downcase}', #{Time.now.to_i}) ")
     end
+    db.disconnect
+    redirect "/#{@id}"
   end
 end
 
-
-
 # Private functions used herein.
 helpers do
+  
+  def get_paste(id)
+    db = Sequel.connect("mysql://#{CONFIG[:mysql_user]}:#{CONFIG[:mysql_pass]}@#{CONFIG[:mysql_host]}/#{CONFIG[:mysql_db]}")
+    db["SELECT * FROM pastes where id = '#{id}'"].each do |row|
+      @paste = {}
+      @paste['id'] = row[:id]
+      @paste['body'] = row[:body]
+      @paste['formatted_body'] = row[:formatted_body]
+      @paste['lang'] = row[:lang]
+      @paste['created_at'] = row[:created_at]
+      @paste['updated_at'] = row[:updated_at]
+    end
+    db.disconnect
+    
+    @paste
+  end
   
   # The languages visible in the drop-down and send to the pygments service
   def languages

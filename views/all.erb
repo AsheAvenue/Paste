@@ -1,0 +1,13 @@
+<blockquote>
+    DELETE FROM PASTES;
+    
+    <% @pastes.each do |paste| %>
+        INSERT INTO PASTE (ID, BODY)
+        VALUES (
+            '<%= paste['id'] %>',
+            '<%= paste['body'] %>'
+        );
+        
+    <% end %>
+
+</blockquote>
