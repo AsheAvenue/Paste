@@ -1,9 +1,7 @@
-RDB_HOST=db.whatever.com
-RDB_PORT=28015
-RDB_DB=paste
-RDB_TABLE=pastes
-PASTE_USER=some
-PASTE_PASS=dude
+PASTE_USER=whatever
+PASTE_PASS=whatever
 MYSQL_HOST=db.whatever.com
-MYSQL_DB=paste
-MYSQL_TABLE=pastes
+MYSQL_USER=whatever
+MYSQL_PASS=whatever
+MYSQL_DB=whatever
+MYSQL_TABLE=whatever
