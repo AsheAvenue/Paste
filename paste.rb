@@ -107,7 +107,7 @@ helpers do
   
   # Use the pygments web service
   def pygmentize(code, lang)
-    url = URI.parse 'http://pygments.appspot.com/'
+    url = URI.parse 'http://pygments.simplabs.com/'
     options = {'lang' => lang, 'code' => code}
     begin
       Net::HTTP.post_form(url, options).body
